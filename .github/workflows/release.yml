@@ -1,0 +1,95 @@
+name: Auto Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g., v1.0.1)'
+        required: true
+        default: 'v2.0'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            VERSION="${{ github.event.inputs.version }}"
+          else
+            VERSION="${GITHUB_REF#refs/tags/}"
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Building release: $VERSION"
+
+      - name: Generate changelog
+        id: changelog
+        run: |
+          echo "changelog<<EOF" >> $GITHUB_OUTPUT
+          PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+          if [ -n "$PREV_TAG" ]; then
+            git log --pretty=format:"- %s (%h)" $PREV_TAG..HEAD
+          else
+            echo "Initial release"
+          fi
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Create release archive
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          mkdir -p /tmp/release
+          cp -r . /tmp/release/
+          cd /tmp/release
+          
+          tar -czvf smart-search-fusion-${VERSION}.tar.gz \
+            --exclude='.git' \
+            --exclude='.github' \
+            --exclude='*.log' \
+            . || true
+          
+          zip -r smart-search-fusion-${VERSION}.zip \
+            -x ".git/*" \
+            -x ".github/*" \
+            -x "*.log" \
+            . || true
+          
+          mv smart-search-fusion-${VERSION}.* $GITHUB_WORKSPACE/
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.version.outputs.version }}
+          name: Smart Search Fusion ${{ steps.version.outputs.version }}
+          body: |
+            ## 🚀 Smart Search Fusion ${{ steps.version.outputs.version }}
+            
+            ### 📦 安装
+            ```bash
+            curl -sL https://raw.githubusercontent.com/SonicBotMan/smart-search-fusion/main/scripts/install.sh | bash
+            ```
+            
+            ### 📋 变更日志
+            ${{ steps.changelog.outputs.changelog }}
+            
+            ### 📥 下载
+            - [smart-search-fusion-${{ steps.version.outputs.version }}.tar.gz](https://github.com/SonicBotMan/smart-search-fusion/releases/download/${{ steps.version.outputs.version }}/smart-search-fusion-${{ steps.version.outputs.version }}.tar.gz)
+            - [smart-search-fusion-${{ steps.version.outputs.version }}.zip](https://github.com/SonicBotMan/smart-search-fusion/releases/download/${{ steps.version.outputs.version }}/smart-search-fusion-${{ steps.version.outputs.version }}.zip)
+          files: |
+            smart-search-fusion-${{ steps.version.outputs.version }}.tar.gz
+            smart-search-fusion-${{ steps.version.outputs.version }}.zip
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
