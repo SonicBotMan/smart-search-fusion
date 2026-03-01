@@ -49,6 +49,77 @@ bash scripts/install.sh
 curl -s https://raw.githubusercontent.com/SonicBotMan/smart-search-fusion/main/scripts/install.sh | bash
 ```
 
+## 🐳 SearXNG 本地部署（可选）
+
+SearXNG 是免费的开源元搜索引擎，可以本地部署后替代付费服务。
+
+### 一键部署
+
+```bash
+# Docker 部署（推荐）
+bash scripts/deploy-searxng.sh --docker
+
+# 查看状态
+bash scripts/deploy-searxng.sh --status
+
+# 停止服务
+bash scripts/deploy-searxng.sh --stop
+```
+
+### 手动部署
+
+```bash
+# 1. 安装 Docker（如果没有）
+curl -fsSL https://get.docker.com | sh
+sudo usermod -aG docker $USER
+
+# 2. 创建目录
+mkdir -p ~/searxng
+
+# 3. 创建 docker-compose.yml
+cat > ~/searxng/docker-compose.yml << 'EOF'
+version: '3.7'
+services:
+  searxng:
+    image: searxng/searxng:latest
+    container_name: searxng
+    ports:
+      - "8888:8080"
+    environment:
+      - SEARXNG_BASE_URL=http://localhost:8888/
+      - SEARXNG_SECRET=$(openssl rand -hex 32)
+    volumes:
+      - ./searxng:/etc/searxng:rw
+    restart: unless-stopped
+EOF
+
+# 4. 启动
+cd ~/searxng && docker-compose up -d
+```
+
+### 访问 SearXNG
+
+- **Web 界面**: http://localhost:8888
+- **API**: http://localhost:8888/search?q=test&format=json
+
+### 配置 Smart Search 使用本地 SearXNG
+
+```bash
+# 编辑搜索脚本，修改 URL
+nano ~/searxng_search.sh
+
+# 将 SEARXNG_URL 改为你的本地地址
+SEARXNG_URL="http://localhost:8888"
+```
+
+### 常见问题
+
+| 问题 | 解决方案 |
+|------|---------|
+| Docker 未安装 | 运行 `curl -fsSL https://get.docker.com | sh` |
+| 端口被占用 | 修改 `docker-compose.yml` 中的端口号 |
+| 无法访问 | 检查防火墙：`sudo ufw allow 8888` |
+
 ## ⚙️ 配置
 
 ### 1. 复制配置文件
@@ -120,17 +191,19 @@ search.sh clear
 ```
 smart-search-fusion/
 ├── README.md                 # 本文件
+├── LICENSE                  # MIT License
+├── .gitignore              # Git 忽略文件
 ├── scripts/
 │   ├── install.sh           # 一键安装脚本
-│   ├── search.sh            # 统一搜索入口
-│   └── cache.sh             # 缓存管理脚本
+│   ├── deploy-searxng.sh   # SearXNG 部署脚本
+│   ├── search.sh           # 统一搜索入口
+│   ├── cache.sh            # 缓存管理
+│   └── security-check.sh   # 安全检查
 ├── config/
-│   └── config.json.example  # 配置文件模板
-├── docs/
-│   ├── DEPENDENCIES.md      # 依赖说明
-│   ├── SECURITY_CHECKLIST.md # 安全检查清单
-│   └── API_REFERENCE.md     # API 文档
-└── LICENSE                  # MIT License
+│   └── config.json.example # 配置文件模板
+└── docs/
+    ├── DEPENDENCIES.md      # 依赖说明
+    └── SECURITY_CHECKLIST.md # 安全检查清单
 ```
 
 ## 🔧 依赖项
