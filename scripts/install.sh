@@ -7,7 +7,7 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_NAME="smart-search-fusion"
 GITHUB_USER=""  # 用户需要替换为实际用户名
-GITHUB_REPO="https://github.com/${GITHUB_USER}/${PROJECT_NAME}.git"
+GITHUB_REPO="https://github.com/SonicBotMan/${PROJECT_NAME}.git"
 
 # 颜色输出
 print_info() {

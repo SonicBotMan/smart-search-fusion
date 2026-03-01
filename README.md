@@ -28,7 +28,7 @@
 
 ```bash
 # 克隆项目
-git clone https://github.com/YOUR_USERNAME/smart-search-fusion.git
+git clone https://github.com/SonicBotMan/smart-search-fusion.git
 cd smart-search-fusion
 
 # 运行安装脚本
@@ -46,7 +46,7 @@ bash scripts/install.sh
 或手动发送指令：
 
 ```bash
-curl -s https://raw.githubusercontent.com/YOUR_USERNAME/smart-search-fusion/main/scripts/install.sh | bash
+curl -s https://raw.githubusercontent.com/SonicBotMan/smart-search-fusion/main/scripts/install.sh | bash
 ```
 
 ## ⚙️ 配置
@@ -185,7 +185,7 @@ MIT License - 详见 [LICENSE](LICENSE)
 
 ## 🐛 问题反馈
 
-如有问题或建议，请提交 [Issue](https://github.com/YOUR_USERNAME/smart-search-fusion/issues)
+如有问题或建议，请提交 [Issue](https://github.com/SonicBotMan/smart-search-fusion/issues)
 
 ## 🌟 Star History
 
