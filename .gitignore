@@ -1,0 +1,28 @@
+# Smart Search Fusion - Git 忽略文件
+
+# 敏感配置（不要提交）
+*.json
+*.key
+*.pem
+.env
+
+# 缓存文件
+cache/
+logs/
+
+# 系统文件
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# 编辑器
+.vscode/
+.idea/
+*.sublime-project
+*~
+
+# 临时文件
+tmp/
+temp/
+*.tmp

@@ -1,0 +1,73 @@
+{
+  "sources": {
+    "gh": {
+      "name": "GitHub",
+      "command": "gh search repos \"{query}\" --limit 5 --json name,description,url",
+      "timeout": 10,
+      "fallback": ["exa"]
+    },
+    "xreach": {
+      "name": "Twitter/X",
+      "command": "xreach search \"{query}\" --json 2>/dev/null | jq -r '.[] | \"\\(.author): \\(.text)\"'",
+      "timeout": 15,
+      "fallback": ["searxng"]
+    },
+    "exa-reddit": {
+      "name": "Reddit",
+      "command": "mcporter call 'exa.web_search_exa({\"query\": \"site:reddit.com {query}\", \"num_results\": 5})'",
+      "timeout": 20,
+      "fallback": ["searxng"]
+    },
+    "ytdlp": {
+      "name": "YouTube/B站",
+      "command": "yt-dlp --dump-json \"{query}\" 2>/dev/null | jq -r '.title,.description' | head -10",
+      "timeout": 30,
+      "fallback": []
+    },
+    "jina": {
+      "name": "Jina Reader",
+      "command": "curl -s \"https://r.jina.ai/{query}\"",
+      "timeout": 15,
+      "fallback": []
+    },
+    "web-search-prime": {
+      "name": "智谱搜索",
+      "command": "mcporter call 'web-search-prime.webSearchPrime(search_query: \"{query}\", location: \"cn\")'",
+      "timeout": 20,
+      "fallback": ["exa", "searxng"]
+    },
+    "searxng": {
+      "name": "SearXNG",
+      "command": "bash ~/searxng_search.sh \"{query}\" 5",
+      "timeout": 15,
+      "fallback": ["exa"]
+    },
+    "exa": {
+      "name": "Exa AI",
+      "command": "mcporter call 'exa.web_search_exa({\"query\": \"{query}\", \"num_results\": 5})'",
+      "timeout": 20,
+      "fallback": ["searxng"]
+    }
+  },
+  "routing": {
+    "github|代码|git|repo": ["gh", "exa"],
+    "twitter|x.com|推文|tweet": ["xreach", "searxng"],
+    "reddit|帖子": ["exa-reddit", "searxng"],
+    "youtube|b站|视频": ["ytdlp"],
+    "http|https|www.": ["jina"],
+    "default": ["web-search-prime", "exa", "searxng"]
+  },
+  "cache": {
+    "enabled": true,
+    "ttl": 600
+  },
+  "parallel": {
+    "enabled": true,
+    "maxSources": 3,
+    "timeout": 30
+  },
+  "retry": {
+    "maxAttempts": 2,
+    "delayMs": 500
+  }
+}
