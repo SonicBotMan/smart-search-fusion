@@ -7,6 +7,8 @@
 
 > 🚀 **智能融合搜索引擎** - 为 OpenClaw 打造的多源并行搜索解决方案
 
+**中文** | **[English](README_EN.md)**
+
 ## 📋 目录
 
 - [特性](#特性)
@@ -195,10 +197,26 @@ bash scripts/search.sh "测试"
 
 MIT License - 详见 [LICENSE](LICENSE)
 
+---
+
+## 📚 文档
+
+- **[更新日志](CHANGELOG.md)** - 版本历史和变更记录
+- **[贡献指南](CONTRIBUTING.md)** - 如何为项目做贡献
+- **[英文文档](README_EN.md)** - English Documentation
+
+---
+
 ## 🐛 问题反馈
 
 如有问题或建议，请提交 [Issue](https://github.com/SonicBotMan/smart-search-fusion/issues)
 
 ---
 
+<div align="center">
+
 **Made with ❤️ for OpenClaw Community**
+
+**如果这个项目对你有帮助，请给一个 ⭐️ Star！**
+
+</div>
